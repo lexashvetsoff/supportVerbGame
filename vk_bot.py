@@ -1,5 +1,6 @@
 import os
 import random
+import logging
 from dotenv import load_dotenv
 
 import vk_api as vk
@@ -15,6 +16,13 @@ GOOGLE_APPLICATION_CREDENTIALS = os.environ['GOOGLE_APPLICATION_CREDENTIALS']
 
 credentials = service_account.Credentials.from_service_account_file(GOOGLE_APPLICATION_CREDENTIALS)
 intents_client = dialogflow.IntentsClient(credentials=credentials)
+
+# Включаем логирование
+logging.basicConfig(
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
+)
+
+logger = logging.getLogger(__name__)
 
 
 def detect_intent_texts(project_id, session_id, text, language_code):
@@ -34,14 +42,29 @@ def detect_intent_texts(project_id, session_id, text, language_code):
     return response
 
 
+def echo(event, vk_api):
+    session_id = event.user_id
+    answer = detect_intent_texts(PROJECT_ID, session_id, event.text, 'ru')
+    print(answer.query_result.intent.display_name)
+    print(answer.query_result.intent_detection_confidence)
+    print(answer.query_result.intent.is_fallback)
+    vk_api.messages.send(
+        user_id=event.user_id,
+        message=event.text,
+        random_id=random.randint(1,1000)
+    )
+
+
 def answer(event, vk_api):
     session_id = event.user_id
     answer = detect_intent_texts(PROJECT_ID, session_id, event.text, 'ru')
-    vk_api.messages.send(
-        user_id = session_id,
-        message = answer.query_result.fulfillment_text,
-        random_id = random.randint(1,1000)
-    )
+    # fallback_intent = answer.query_result.intent.is_fallback
+    if not answer.query_result.intent.is_fallback:
+        vk_api.messages.send(
+            user_id = session_id,
+            message = answer.query_result.fulfillment_text,
+            random_id = random.randint(1,1000)
+        )
 
 
 def main():
@@ -52,6 +75,7 @@ def main():
     for event in longpoll.listen():
         if event.type == VkEventType.MESSAGE_NEW and event.to_me:
             answer(event, vk_api)
+            # echo(event, vk_api)
 
 
 if __name__  == '__main__':
