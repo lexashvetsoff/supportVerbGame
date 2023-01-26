@@ -5,12 +5,42 @@ from dotenv import load_dotenv
 from telegram import Update, ForceReply
 from telegram.ext import Updater, CommandHandler, MessageHandler, CallbackContext, Filters
 
+from google.cloud import dialogflow
+from google.oauth2 import service_account
+from google.auth import impersonated_credentials
+
+load_dotenv()
+
+TELEGRAM_BOT_TOKEN = os.environ['TELEGRAM_BOT_TOKEN']
+PROJECT_ID = os.environ['PROJECT_ID']
+GOOGLE_APPLICATION_CREDENTIALS = os.environ['GOOGLE_APPLICATION_CREDENTIALS']
+
+credentials = service_account.Credentials.from_service_account_file(GOOGLE_APPLICATION_CREDENTIALS)
+intents_client = dialogflow.IntentsClient(credentials=credentials)
+
 # Включаем логирование
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
 )
 
 logger = logging.getLogger(__name__)
+
+
+def detect_intent_texts(project_id, session_id, text, language_code):
+    session_client = dialogflow.SessionsClient()
+    session = session_client.session_path(project_id, session_id)
+
+    text_input = dialogflow.TextInput(text=text, language_code=language_code)
+    query_input = dialogflow.QueryInput(text=text_input)
+
+    response = session_client.detect_intent(
+        request={
+            'session': session,
+            'query_input': query_input
+        }
+    )
+
+    return response
 
 
 def start(update: Update, context: CallbackContext) -> None:
@@ -28,18 +58,18 @@ def help_command(update: Update, context: CallbackContext) -> None:
 
 
 def echo(update: Update, context: CallbackContext) -> None:
-    """Echo the user message."""
-    update.message.reply_text(update.message.text)
+    session_id = update.message.chat_id
+    answer = detect_intent_texts(PROJECT_ID, session_id, update.message.text, 'ru')
+    # print(answer.query_result.intent_detection_confidence)
+    # print(answer.query_result.fulfillment_text)
+    update.message.reply_text(answer.query_result.fulfillment_text)
 
 
 def main():
-    load_dotenv()
-
-    tg_bot_token = os.environ['TELEGRAM_BOT_TOKEN']
 
     """Start the bot."""
     # Create the Updater and pass it your bot's token.
-    updater = Updater(tg_bot_token)
+    updater = Updater(TELEGRAM_BOT_TOKEN)
 
     # Get the dispatcher to register handlers
     dispatcher = updater.dispatcher
