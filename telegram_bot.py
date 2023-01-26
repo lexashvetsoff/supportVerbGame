@@ -7,7 +7,6 @@ from telegram.ext import Updater, CommandHandler, MessageHandler, CallbackContex
 
 from google.cloud import dialogflow
 from google.oauth2 import service_account
-from google.auth import impersonated_credentials
 
 load_dotenv()
 
@@ -57,11 +56,9 @@ def help_command(update: Update, context: CallbackContext) -> None:
     update.message.reply_text('Help!')
 
 
-def echo(update: Update, context: CallbackContext) -> None:
+def answer(update: Update, context: CallbackContext) -> None:
     session_id = update.message.chat_id
     answer = detect_intent_texts(PROJECT_ID, session_id, update.message.text, 'ru')
-    # print(answer.query_result.intent_detection_confidence)
-    # print(answer.query_result.fulfillment_text)
     update.message.reply_text(answer.query_result.fulfillment_text)
 
 
@@ -79,7 +76,7 @@ def main():
     dispatcher.add_handler(CommandHandler("help", help_command))
 
     # on non command i.e message - echo the message on Telegram
-    dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, echo))
+    dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, answer))
 
     # Start the Bot
     updater.start_polling()
