@@ -51,7 +51,7 @@ python3 create_intents.py
 
 ## Telegram бот
 
-![Alt text](https://github.com/lexashvetsoff/supportVerbGame/blob/main/screen/demo_tg_bot.gif)
+![Alt text](https://github.com/lexashvetsoff/supportVerbGame/blob/main/screen/demo_tg_bot.gif)  
 [Пример рабочего бота](https://vk.com/public218494303)
 
 ### Запуск
@@ -62,7 +62,7 @@ python3 telegram_bot.py
 
 ## Vk бот
 
-![Alt text](https://github.com/lexashvetsoff/supportVerbGame/blob/main/screen/demo_vk_bot.gif)
+![Alt text](https://github.com/lexashvetsoff/supportVerbGame/blob/main/screen/demo_vk_bot.gif)  
 Пример работы можно посмотреть написав в [группу в vk](https://t.me/verb_support_bot)
 
 ### Запуск
