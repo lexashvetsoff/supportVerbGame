@@ -68,7 +68,7 @@ python3 telegram_bot.py
 ### Запуск
 
 ```sh
-python3 telegram_bot.py
+python3 vk_bot.py
 ```
 
 ## Цели проекта
