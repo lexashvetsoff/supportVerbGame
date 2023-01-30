@@ -1,18 +1,13 @@
 import logging
-import os
-from dotenv import load_dotenv
+
+from settings import TELEGRAM_BOT_TOKEN, PROJECT_ID, GOOGLE_APPLICATION_CREDENTIALS
+from dialogflow_functions import detect_intent_texts
 
 from telegram import Update, ForceReply
 from telegram.ext import Updater, CommandHandler, MessageHandler, CallbackContext, Filters
 
 from google.cloud import dialogflow
 from google.oauth2 import service_account
-
-load_dotenv()
-
-TELEGRAM_BOT_TOKEN = os.environ['TELEGRAM_BOT_TOKEN']
-PROJECT_ID = os.environ['PROJECT_ID']
-GOOGLE_APPLICATION_CREDENTIALS = os.environ['GOOGLE_APPLICATION_CREDENTIALS']
 
 credentials = service_account.Credentials.from_service_account_file(GOOGLE_APPLICATION_CREDENTIALS)
 intents_client = dialogflow.IntentsClient(credentials=credentials)
@@ -23,23 +18,6 @@ logging.basicConfig(
 )
 
 logger = logging.getLogger(__name__)
-
-
-def detect_intent_texts(project_id, session_id, text, language_code):
-    session_client = dialogflow.SessionsClient()
-    session = session_client.session_path(project_id, session_id)
-
-    text_input = dialogflow.TextInput(text=text, language_code=language_code)
-    query_input = dialogflow.QueryInput(text=text_input)
-
-    response = session_client.detect_intent(
-        request={
-            'session': session,
-            'query_input': query_input
-        }
-    )
-
-    return response
 
 
 def start(update: Update, context: CallbackContext) -> None:
