@@ -20,7 +20,6 @@ logger = logging.getLogger(__name__)
 def answer(event, vk_api):
     session_id = event.user_id
     answer = detect_intent_texts(PROJECT_ID, session_id, event.text, 'ru')
-    # fallback_intent = answer.query_result.intent.is_fallback
     if not answer.query_result.intent.is_fallback:
         vk_api.messages.send(
             user_id = session_id,
@@ -33,7 +32,7 @@ def main():
     logging.basicConfig(
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
     )
-    
+
     vk_session = vk.VkApi(token=VK_TOKEN)
     longpoll = VkLongPoll(vk_session)
     vk_api = vk_session.get_api()
