@@ -2,12 +2,24 @@ import logging
 import traceback
 import html
 import json
+import os
+from dotenv import load_dotenv
 
-from settings import TELEGRAM_BOT_TOKEN, PROJECT_ID, GOOGLE_APPLICATION_CREDENTIALS, CHAT_ID
 from dialogflow import detect_intent_texts
 
 from telegram import Update, ForceReply, ParseMode
 from telegram.ext import Updater, CommandHandler, MessageHandler, CallbackContext, Filters
+
+from google.oauth2 import service_account
+
+load_dotenv()
+
+GOOGLE_APPLICATION_CREDENTIALS = os.environ['GOOGLE_APPLICATION_CREDENTIALS']
+TELEGRAM_BOT_TOKEN = os.environ['TELEGRAM_BOT_TOKEN']
+PROJECT_ID = os.environ['PROJECT_ID']
+CHAT_ID = os.environ['CHAT_ID']
+
+CREDENTIALS = service_account.Credentials.from_service_account_file(GOOGLE_APPLICATION_CREDENTIALS)
 
 # Включаем логирование
 logger = logging.getLogger(__name__)
@@ -24,7 +36,7 @@ def start(update: Update, context: CallbackContext) -> None:
 
 def answer(update: Update, context: CallbackContext) -> None:
     session_id = update.message.chat_id
-    answer = detect_intent_texts(PROJECT_ID, session_id, update.message.text, 'ru')
+    answer = detect_intent_texts(PROJECT_ID, session_id, update.message.text, 'ru', CREDENTIALS)
     update.message.reply_text(answer.query_result.fulfillment_text)
 
 

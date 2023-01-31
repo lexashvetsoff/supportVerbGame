@@ -1,16 +1,20 @@
 import json
+import os
+from dotenv import load_dotenv
 
-from settings import PROJECT_ID, GOOGLE_APPLICATION_CREDENTIALS
 from dialogflow import create_intent
 
-from google.cloud import dialogflow
 from google.oauth2 import service_account
-
-credentials = service_account.Credentials.from_service_account_file(GOOGLE_APPLICATION_CREDENTIALS)
-intents_client = dialogflow.IntentsClient(credentials=credentials)
 
 
 def main():
+    load_dotenv()
+
+    GOOGLE_APPLICATION_CREDENTIALS = os.environ['GOOGLE_APPLICATION_CREDENTIALS']
+    PROJECT_ID = os.environ['PROJECT_ID']
+
+    credentials = service_account.Credentials.from_service_account_file(GOOGLE_APPLICATION_CREDENTIALS)
+
     with open('questions.json', 'r', encoding='utf-8') as file:
         questions_json = file.read()
     
@@ -22,7 +26,7 @@ def main():
         training_phrases_parts = values['questions']
         message_texts = [values['answer']]
 
-        create_intent(PROJECT_ID, display_name, training_phrases_parts, message_texts)
+        create_intent(PROJECT_ID, display_name, training_phrases_parts, message_texts, credentials)
 
 
 if __name__ == '__main__':
