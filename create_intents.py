@@ -21,10 +21,10 @@ def main():
     questions = json.loads(questions_json)
 
     # Получаем ключи
-    for question, values in questions.items():
+    for question, question_values in questions.items():
         display_name = question 
-        training_phrases_parts = values['questions']
-        message_texts = [values['answer']]
+        training_phrases_parts = question_values['questions']
+        message_texts = [question_values['answer']]
 
         create_intent(PROJECT_ID, display_name, training_phrases_parts, message_texts, credentials)
 
