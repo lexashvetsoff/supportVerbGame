@@ -21,7 +21,6 @@ CHAT_ID = os.environ['CHAT_ID']
 
 CREDENTIALS = service_account.Credentials.from_service_account_file(GOOGLE_APPLICATION_CREDENTIALS)
 
-# Включаем логирование
 logger = logging.getLogger(__name__)
 
 
@@ -60,7 +59,6 @@ def error_handler(update, context):
         f'<pre>{html.escape(tb_string)}</pre>'
     )
 
-    # Отправляем сообщение разработчику
     context.bot.send_message(chat_id=CHAT_ID, text=message, parse_mode=ParseMode.HTML)
 
 
@@ -71,18 +69,14 @@ def main():
     )
 
     """Start the bot."""
-    # Create the Updater and pass it your bot's token.
     updater = Updater(TELEGRAM_BOT_TOKEN)
 
-    # Get the dispatcher to register handlers
     dispatcher = updater.dispatcher
 
-    # on different commands - answer in Telegram
     dispatcher.add_handler(CommandHandler("start", start))
     dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, answer))
     dispatcher.add_error_handler(error_handler)
 
-    # Start the Bot
     updater.start_polling()
 
     updater.idle()

@@ -18,7 +18,6 @@ PROJECT_ID = os.environ['PROJECT_ID']
 
 CREDENTIALS = service_account.Credentials.from_service_account_file(GOOGLE_APPLICATION_CREDENTIALS)
 
-# Включаем логирование
 logger = logging.getLogger(__name__)
 
 

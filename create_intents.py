@@ -20,7 +20,6 @@ def main():
     
     questions = json.loads(questions_json)
 
-    # Получаем ключи
     for question, question_values in questions.items():
         display_name = question 
         training_phrases_parts = question_values['questions']
