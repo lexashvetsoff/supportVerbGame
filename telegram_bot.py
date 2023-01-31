@@ -13,10 +13,6 @@ credentials = service_account.Credentials.from_service_account_file(GOOGLE_APPLI
 intents_client = dialogflow.IntentsClient(credentials=credentials)
 
 # Включаем логирование
-logging.basicConfig(
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
-)
-
 logger = logging.getLogger(__name__)
 
 
@@ -44,6 +40,9 @@ def answer(update: Update, context: CallbackContext) -> None:
 
 
 def main():
+    logging.basicConfig(
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
+    )
 
     """Start the bot."""
     # Create the Updater and pass it your bot's token.

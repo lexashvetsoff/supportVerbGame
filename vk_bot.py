@@ -14,10 +14,6 @@ credentials = service_account.Credentials.from_service_account_file(GOOGLE_APPLI
 intents_client = dialogflow.IntentsClient(credentials=credentials)
 
 # Включаем логирование
-logging.basicConfig(
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
-)
-
 logger = logging.getLogger(__name__)
 
 
@@ -34,6 +30,10 @@ def answer(event, vk_api):
 
 
 def main():
+    logging.basicConfig(
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
+    )
+    
     vk_session = vk.VkApi(token=VK_TOKEN)
     longpoll = VkLongPoll(vk_session)
     vk_api = vk_session.get_api()
