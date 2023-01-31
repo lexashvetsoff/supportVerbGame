@@ -29,12 +29,9 @@ def start(update: Update, context: CallbackContext) -> None:
 
 
 def answer(update: Update, context: CallbackContext) -> None:
-    try:
-        session_id = update.message.chat_id
-        answer = detect_intent_texts(PROJECT_ID, session_id, update.message.text, 'ru')
-        update.message.reply_text(answer.query_result.fulfillment_text)
-    except:
-        logger.exception()
+    session_id = update.message.chat_id
+    answer = detect_intent_texts(PROJECT_ID, session_id, update.message.text, 'ru')
+    update.message.reply_text(answer.query_result.fulfillment_text)
 
 
 def error_handler(update, context):
