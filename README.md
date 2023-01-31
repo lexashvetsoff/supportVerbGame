@@ -21,6 +21,7 @@ pip install -r requirements.txt
 - `TELEGRAM_BOT_TOKEN` — token телеграмм бота (получается у @BotFather при регистрации бота). 
 - `PROJECT_ID` — id проекта на Google Cloud.
 - `VK_TOKEN` - token vk бота (получается при создании группы в vk)
+- `CHAT_ID` - ваш id в telegram, узнать можно написав [боту](@my_id_bot)
 - `GOOGLE_APPLICATION_CREDENTIALS` - путь к файлу учетной записи службы, содержащий учетные данные закрытого ключа. Сохранить его нужно в формате `JSON` и положить в корень проекта. Более подробно о том как его получить можно посмотреть [здесь](https://stackoverflow.com/questions/43004904/accessing-gae-log-files-using-google-cloud-logging-python)
 
 ## Создание интентов (обучение ботов)

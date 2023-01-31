@@ -1,9 +1,12 @@
 import logging
+import traceback
+import html
+import json
 
-from settings import TELEGRAM_BOT_TOKEN, PROJECT_ID, GOOGLE_APPLICATION_CREDENTIALS
+from settings import TELEGRAM_BOT_TOKEN, PROJECT_ID, GOOGLE_APPLICATION_CREDENTIALS, CHAT_ID
 from dialogflow import detect_intent_texts
 
-from telegram import Update, ForceReply
+from telegram import Update, ForceReply, ParseMode
 from telegram.ext import Updater, CommandHandler, MessageHandler, CallbackContext, Filters
 
 from google.cloud import dialogflow
@@ -34,6 +37,31 @@ def answer(update: Update, context: CallbackContext) -> None:
         logger.exception()
 
 
+def error_handler(update, context):
+    """
+        Регистрирует ошибку и уведомляет   
+        разработчика сообщением telegram.
+    """
+    logger.error(msg="Исключение при обработке сообщения:", exc_info=context.error)
+
+    tb_list = traceback.format_exception(None, context.error, context.error.__traceback__)
+    tb_string = ''.join(tb_list)
+
+    update_str = update.to_dict() if isinstance(update, Update) else str(update)
+    message = (
+        f'Возникло исключение при обработке сообщения.\n'
+        f'<pre>update = {html.escape(json.dumps(update_str, indent=2, ensure_ascii=False))}'
+        '</pre>\n\n'
+        f'<pre>context.chat_data = {html.escape(str(context.chat_data))}</pre>\n\n'
+        f'<pre>context.user_data = {html.escape(str(context.user_data))}</pre>\n\n'
+        f'<pre>{html.escape(tb_string)}</pre>'
+    )
+
+    # Отправляем сообщение разработчику
+    context.bot.send_message(chat_id=CHAT_ID, text=message, parse_mode=ParseMode.HTML)
+
+
+
 def main():
     logging.basicConfig(
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
@@ -49,6 +77,7 @@ def main():
     # on different commands - answer in Telegram
     dispatcher.add_handler(CommandHandler("start", start))
     dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, answer))
+    dispatcher.add_error_handler(error_handler)
 
     # Start the Bot
     updater.start_polling()
