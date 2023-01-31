@@ -18,13 +18,9 @@ def main():
 
     # Получаем ключи
     for question in questions:
-        print(question)
         display_name = question 
-        print(display_name)
         training_phrases_parts = questions[display_name]['questions']
-        print(training_phrases_parts)
         message_texts = [questions[display_name]['answer']]
-        print(message_texts)
 
         create_intent(PROJECT_ID, display_name, training_phrases_parts, message_texts)
 
