@@ -1,7 +1,7 @@
 import json
 
 from settings import PROJECT_ID, GOOGLE_APPLICATION_CREDENTIALS
-from dialogflow_functions import create_intent
+from dialogflow import create_intent
 
 from google.cloud import dialogflow
 from google.oauth2 import service_account

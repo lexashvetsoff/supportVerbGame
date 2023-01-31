@@ -1,7 +1,7 @@
 import logging
 
 from settings import TELEGRAM_BOT_TOKEN, PROJECT_ID, GOOGLE_APPLICATION_CREDENTIALS
-from dialogflow_functions import detect_intent_texts
+from dialogflow import detect_intent_texts
 
 from telegram import Update, ForceReply
 from telegram.ext import Updater, CommandHandler, MessageHandler, CallbackContext, Filters

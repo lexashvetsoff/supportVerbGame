@@ -2,7 +2,7 @@ import random
 import logging
 
 from settings import VK_TOKEN, PROJECT_ID, GOOGLE_APPLICATION_CREDENTIALS
-from dialogflow_functions import detect_intent_texts
+from dialogflow import detect_intent_texts
 
 import vk_api as vk
 from vk_api.longpoll import VkLongPoll, VkEventType
