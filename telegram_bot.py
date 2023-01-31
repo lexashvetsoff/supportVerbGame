@@ -9,12 +9,6 @@ from dialogflow import detect_intent_texts
 from telegram import Update, ForceReply, ParseMode
 from telegram.ext import Updater, CommandHandler, MessageHandler, CallbackContext, Filters
 
-from google.cloud import dialogflow
-from google.oauth2 import service_account
-
-credentials = service_account.Credentials.from_service_account_file(GOOGLE_APPLICATION_CREDENTIALS)
-intents_client = dialogflow.IntentsClient(credentials=credentials)
-
 # Включаем логирование
 logger = logging.getLogger(__name__)
 

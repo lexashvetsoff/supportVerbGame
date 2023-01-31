@@ -7,12 +7,6 @@ from dialogflow import detect_intent_texts
 import vk_api as vk
 from vk_api.longpoll import VkLongPoll, VkEventType
 
-from google.cloud import dialogflow
-from google.oauth2 import service_account
-
-credentials = service_account.Credentials.from_service_account_file(GOOGLE_APPLICATION_CREDENTIALS)
-intents_client = dialogflow.IntentsClient(credentials=credentials)
-
 # Включаем логирование
 logger = logging.getLogger(__name__)
 
