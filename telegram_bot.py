@@ -4,6 +4,7 @@ import html
 import json
 import os
 from dotenv import load_dotenv
+from functools import partial
 
 from dialogflow import detect_intent_texts
 
@@ -12,14 +13,6 @@ from telegram.ext import Updater, CommandHandler, MessageHandler, CallbackContex
 
 from google.oauth2 import service_account
 
-load_dotenv()
-
-GOOGLE_APPLICATION_CREDENTIALS = os.environ['GOOGLE_APPLICATION_CREDENTIALS']
-TELEGRAM_BOT_TOKEN = os.environ['TELEGRAM_BOT_TOKEN']
-PROJECT_ID = os.environ['PROJECT_ID']
-CHAT_ID = os.environ['CHAT_ID']
-
-CREDENTIALS = service_account.Credentials.from_service_account_file(GOOGLE_APPLICATION_CREDENTIALS)
 
 logger = logging.getLogger(__name__)
 
@@ -33,13 +26,13 @@ def start(update: Update, context: CallbackContext) -> None:
     )
 
 
-def answer(update: Update, context: CallbackContext) -> None:
+def answer(update: Update, context: CallbackContext, project_id, credentials) -> None:
     session_id = update.message.chat_id
-    answer = detect_intent_texts(PROJECT_ID, session_id, update.message.text, 'ru', CREDENTIALS)
+    answer = detect_intent_texts(project_id, session_id, update.message.text, 'ru', credentials)
     update.message.reply_text(answer.query_result.fulfillment_text)
 
 
-def error_handler(update, context):
+def error_handler(update, context, chat_id):
     """
         Регистрирует ошибку и уведомляет   
         разработчика сообщением telegram.
@@ -59,14 +52,26 @@ def error_handler(update, context):
         f'<pre>{html.escape(tb_string)}</pre>'
     )
 
-    context.bot.send_message(chat_id=CHAT_ID, text=message, parse_mode=ParseMode.HTML)
+    context.bot.send_message(chat_id=chat_id, text=message, parse_mode=ParseMode.HTML)
 
 
 
 def main():
+    load_dotenv()
+
+    GOOGLE_APPLICATION_CREDENTIALS = os.environ['GOOGLE_APPLICATION_CREDENTIALS']
+    TELEGRAM_BOT_TOKEN = os.environ['TELEGRAM_BOT_TOKEN']
+    PROJECT_ID = os.environ['PROJECT_ID']
+    CHAT_ID = os.environ['CHAT_ID']
+
+    CREDENTIALS = service_account.Credentials.from_service_account_file(GOOGLE_APPLICATION_CREDENTIALS)
+
     logging.basicConfig(
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
     )
+
+    wrap_answer = partial(answer, project_id=PROJECT_ID, credentials=CREDENTIALS)
+    wrap_error_handler = partial(error_handler, chat_id=CHAT_ID)
 
     """Start the bot."""
     updater = Updater(TELEGRAM_BOT_TOKEN)
@@ -74,8 +79,8 @@ def main():
     dispatcher = updater.dispatcher
 
     dispatcher.add_handler(CommandHandler("start", start))
-    dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, answer))
-    dispatcher.add_error_handler(error_handler)
+    dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, wrap_answer))
+    dispatcher.add_error_handler(wrap_error_handler)
 
     updater.start_polling()
 
